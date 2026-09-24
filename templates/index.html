@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF Toolkit · Compresseur PDF</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <main>
+    <header><span class="logo">PDF<span> / </span>TOOLKIT</span><span class="badge">Simple & local</span></header>
+    <section class="intro"><p class="eyebrow">MOINS DE POIDS. PLUS DE PLACE.</p><h1>Vos PDF,<br>en plus léger.</h1><p>Préparez vos documents pour les partager facilement.<br>Choisissez un fichier, ajustez la qualité et téléchargez le résultat.</p></section>
+    <form id="compress-form" action="/compress" method="post" enctype="multipart/form-data">
+      <label class="upload" for="file"><span class="icon" aria-hidden="true">↓</span><strong>Choisissez votre document</strong><span>Un fichier PDF · envoi limité à 50 Mio</span><input id="file" name="file" type="file" accept=".pdf,application/pdf" required></label>
+      <label class="field-label" for="quality">Qualité du document</label>
+      <select id="quality" name="quality">{% for value, label in qualities.items() %}<option value="{{ value }}" {% if value == 'ebook' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <p class="hint">Une compression forte peut réduire la netteté des images.</p>
+      <button id="submit" type="submit">Compresser le PDF <span aria-hidden="true">↗</span></button>
+      <p id="status" role="status" aria-live="polite"></p>
+      <a id="download" hidden>Télécharger le PDF</a>
+    </form>
+    <footer>Traité sur votre instance · fichiers temporaires supprimés après traitement.<br>Le gain dépend du document. Un PDF déjà optimisé peut garder sa taille initiale.</footer>
+  </main>
+</body>
+</html>

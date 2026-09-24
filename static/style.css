@@ -1,0 +1,28 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #182d27; background: #f3f5ee; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 760px; margin: auto; padding: 36px 24px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo { font-size: 14px; font-weight: 800; letter-spacing: 2px; }
+.logo span { color: #477456; }
+.badge { border: 1px solid #c6d4c5; border-radius: 30px; padding: 7px 12px; font-size: 12px; }
+.intro { padding: 60px 0 24px; }
+.eyebrow { color: #477456; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+h1 { font-size: clamp(42px, 8vw, 68px); line-height: 1.06; letter-spacing: -3px; margin: 20px 0; }
+.intro > p:last-child { line-height: 1.7; color: #52645b; }
+form { padding: 28px; background: white; border: 1px solid #dde3d8; border-radius: 20px; box-shadow: 0 12px 40px #253d2710; }
+.upload { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 26px 12px; border: 1px dashed #9cac9b; background: #f8faf5; border-radius: 12px; cursor: pointer; text-align: center; }
+.upload > span:not(.icon), .hint, footer { color: #58695e; font-size: 13px; }
+.icon { font-size: 28px; }
+input { max-width: 100%; font: inherit; font-size: 13px; }
+.field-label { display: block; margin: 24px 0 10px; font-size: 14px; font-weight: 600; }
+select { width: 100%; border: 1px solid #c9d3c5; border-radius: 8px; padding: 14px; background: white; color: inherit; font: inherit; }
+button { display: flex; justify-content: space-between; width: 100%; margin-top: 24px; padding: 16px 20px; border: 0; border-radius: 10px; background: #214f39; color: white; font: inherit; font-weight: 600; cursor: pointer; }
+button:hover { background: #163e2a; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #749b42; outline-offset: 4px; }
+#status { line-height: 1.5; font-size: 14px; }
+#status:empty { display: none; }
+a { color: #214f39; font-weight: 600; }
+footer { line-height: 1.8; margin: 24px 0; text-align: center; }
+@media (max-width: 480px) { main { padding: 24px 16px; } form { padding: 20px; } .intro { padding-top: 40px; } .badge { font-size: 10px; } }

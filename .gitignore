@@ -1,2 +1,10 @@
 __pycache__/
-venv
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+*.pdf
+.pytest_cache/
+.coverage
+.DS_Store

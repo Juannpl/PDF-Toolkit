@@ -1,4 +1,6 @@
-from gui import root
+"""Entry point for the optional desktop interface."""
 
 if __name__ == "__main__":
-    root.mainloop()
+    from gui import run
+
+    run()
