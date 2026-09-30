@@ -1,6 +1,52 @@
-# PDF Toolkit
+<div align="center">
 
-Un compresseur de PDF simple, avec une interface web en français et un lancement en une commande avec Docker. Sélectionnez un document, choisissez la qualité et téléchargez le résultat.
+# 📄 CompressFile — PDF Toolkit
+
+**Des PDF plus légers, traités sur votre machine.**
+
+Un outil de compression PDF avec une interface web en français, quatre niveaux de qualité et une interface bureau optionnelle.
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.1.3-000000?logo=flask&logoColor=white)
+![Ghostscript](https://img.shields.io/badge/Moteur-Ghostscript-6B46C1)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![CustomTkinter](https://img.shields.io/badge/Bureau-CustomTkinter-1F6AA5)
+
+[Fonctionnalités](#-fonctionnalités) · [Démarrage Docker](#démarrage-rapide-avec-docker) · [Utilisation](#utilisation) · [Développement](#développement-local)
+
+</div>
+
+---
+
+## 🎯 Présentation
+
+**CompressFile**, nommé **PDF Toolkit** dans l’interface, permet de réduire la taille d’un PDF pour faciliter son partage ou son stockage. Sélectionnez un document, choisissez le compromis entre qualité et compression, puis récupérez le résultat.
+
+La compression est effectuée par l’exécutable Ghostscript sur la machine qui héberge l’application. Aucun service externe de traitement, compte ou clé API n’est nécessaire.
+
+## ✨ Fonctionnalités
+
+- **Interface web en français** : sélection du fichier, choix de qualité et téléchargement.
+- **Quatre réglages** : compression forte, équilibrée, légère ou haute qualité.
+- **Résultat mesurable** : affichage du pourcentage de réduction et de la taille du fichier produit.
+- **Préservation du contenu original** si la compression ne réduit pas la taille du document.
+- **Gestion des erreurs** : fichier invalide, niveau inconnu, dépassement de taille ou traitement trop long.
+- **Interface bureau optionnelle** avec sélection de la destination et traitement en arrière-plan.
+- **Démarrage avec Docker Compose**, sans installation locale de Python ou Ghostscript.
+
+L’outil traite un PDF à la fois par soumission. La fusion, le découpage et la conversion d’autres formats ne font pas partie des fonctionnalités actuelles.
+
+## 🛠️ Stack technique
+
+| Usage | Technologie |
+| --- | --- |
+| Compression | Ghostscript, moteur `pdfwrite` |
+| Backend web | Python 3.12, Flask 3.1.3 |
+| Serveur dans Docker | Gunicorn 23.0.0, deux workers |
+| Interface web | HTML, CSS et JavaScript, ressources servies sans CDN |
+| Interface bureau | CustomTkinter 5.2.2, Tkinter |
+| Exécution locale conteneurisée | Docker et Docker Compose |
+| Tests et intégration continue | `unittest`, GitHub Actions |
 
 ## Démarrage rapide avec Docker
 
@@ -94,6 +140,44 @@ python -m unittest discover -s tests -v
 
 Les tests couvrent les erreurs, les limites d’envoi, la préservation des fichiers et la compression réelle avec Ghostscript pour les quatre niveaux de qualité. Le test réel est ignoré si Ghostscript manque. GitHub Actions installe Ghostscript, exécute les tests et vérifie le démarrage Docker.
 
+## 🔌 Routes web
+
+| Méthode | Route | Fonction |
+| --- | --- | --- |
+| `GET` | `/` | Afficher l’interface de compression |
+| `GET` | `/health` | Retourner `{"status": "ok"}` pour la sonde de vie |
+| `POST` | `/compress` | Recevoir un PDF et renvoyer le résultat en téléchargement |
+
+La route de compression attend un formulaire `multipart/form-data` avec le fichier dans `file` et le réglage dans `quality` (`ebook` par défaut).
+
+Exemple depuis un terminal, une fois l’application démarrée :
+
+```bash
+curl --fail-with-body \
+  -F 'file=@document.pdf' \
+  -F 'quality=ebook' \
+  http://localhost:8080/compress \
+  --output document-compresse.pdf
+```
+
+Le serveur renvoie une erreur `400` pour une entrée invalide ou une compression refusée, `413` pour une requête trop volumineuse, et `500` pour certaines erreurs de traitement. La sonde `/health` indique que le serveur répond ; elle n’exécute pas de compression.
+
+## 🧭 Fonctionnement
+
+```mermaid
+flowchart LR
+    Web[Navigateur] --> Flask[Flask / Gunicorn]
+    Flask --> Engine[Module de compression Python]
+    Desktop[Interface CustomTkinter] --> Engine
+    Engine --> GS[Ghostscript]
+    GS --> Result[PDF compressé ou original conservé]
+    Result --> Download[Téléchargement web ou fichier local]
+```
+
+Le module partagé vérifie l’en-tête PDF, lance Ghostscript avec une limite de temps et compare la taille obtenue à celle de l’original. Il écrit d’abord dans un fichier temporaire, puis remplace la destination seulement lorsque le traitement a abouti. Un échec de conversion ne tronque donc pas un fichier de destination existant.
+
+Dans le parcours web, le résultat est chargé en mémoire avant la suppression du répertoire temporaire. Dans l’interface bureau, il est enregistré à l’emplacement choisi par l’utilisateur.
+
 ## Organisation
 
 ```text
@@ -108,3 +192,18 @@ Dockerfile / compose.yaml Déploiement local
 Les dépendances Python web et bureau sont séparées. Le module Python `ghostscript`, `pdf2image` et `pymupdf` ne sont pas nécessaires : la compression utilise directement l’exécutable système `gs`.
 
 Références : [gestion des fichiers avec Flask](https://flask.palletsprojects.com/en/stable/patterns/fileuploads/) et [configuration Gunicorn](https://docs.gunicorn.org/en/stable/settings.html).
+
+
+## 🧪 Intégration continue
+
+Le workflow [CI](.github/workflows/ci.yml) s’exécute lors des pushes et des pull requests. Il installe Python et Ghostscript, lance les tests, valide la configuration Compose, construit le conteneur et vérifie la réponse de `/health`.
+
+Ce workflow assure des contrôles de fonctionnement ; il ne publie pas d’image Docker et ne déploie pas l’application sur un serveur distant.
+
+---
+
+<div align="center">
+
+**PDF Toolkit** · Compresser simplement, conserver le contrôle de ses documents.
+
+</div>
